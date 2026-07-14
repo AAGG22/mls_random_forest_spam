@@ -5,6 +5,9 @@ import joblib
 st.set_page_config(page_title="Filtro Anti-Spam IA", page_icon="🛡️")
 st.title("🛡️ Filtro Anti-Spam Inteligente")
 st.write("Copia y pega el contenido de cualquier correo para analizarlo con Inteligencia Artificial (NLP).")
+st.write("Algoritmo Random Forest: Bosque Aleatorio (muchos árboles de decisión juntos)")
+st.write("Alfredo Galván (TUW-UNSL")
+
 
 # 2. Función optimizada para abrir los archivos joblib (cargar el modelo en el futuro)
 @st.cache_resource  # Hace que el modelo se cargue una sola vez en memoria
