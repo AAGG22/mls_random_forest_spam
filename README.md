@@ -12,13 +12,13 @@ Aplicación web de **Inteligencia Artificial** que clasifica automáticamente co
 
 ## 📋 Tabla de Contenidos
 
-- [Demo](#demo)
+- [Foco](#foco)
 - [Descripción General](#descripción-general)
 - [Cómo Funciona el Sistema](#cómo-funciona-el-sistema)
 
 ---
 
-## Demo
+## Foco
 
 *La interfaz permite escribir o pegar un correo y obtener una clasificación instantánea con porcentaje de confianza.*
 
@@ -81,7 +81,7 @@ Usamos `CountVectorizer`, una herramienta de NLP que:
 
 Una vez que el texto es numérico, el **modelo de IA** puede procesarlo. En este caso, usamos **Random Forest**, un algoritmo de aprendizaje automático que:
 
-- Está entrenado con **miles de ejemplos** de correos (spam y no spam).
+- Está, en este caso, entrenado con **dosmil de ejemplos** de correos (spam y no spam).
 - Aprende **patrones complejos** en los datos numéricos.
 - Toma una decisión basada en la combinación de **muchos árboles de decisión**.
 
