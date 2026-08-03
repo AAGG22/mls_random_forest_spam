@@ -3,17 +3,91 @@ import joblib
 import base64
 from pathlib import Path
 
-# Rutas de imágenes (respecto a este archivo app.py)
+# Rutas de recursos (respecto a este archivo app.py)
 BASE_DIR = Path(__file__).parent
 ESCUDO_IMG = BASE_DIR / "images" / "escudo.png"
 PERFIL_IMG = BASE_DIR / "images" / "profile" / "developer3.jpg"
+FONTS_DIR = BASE_DIR / "fonts"
 
-# 1. Configuración de la interfaz visual de la pestaña
-# page_icon acepta un emoji O la ruta a un archivo de imagen
+# 1. Configuración de la pestaña del navegador
+# page_icon = favicon (ícono de favoritos / pestaña). Acepta emoji o ruta a imagen.
 st.set_page_config(
     page_title="Filtro Anti-Spam IA",
     page_icon=str(ESCUDO_IMG) if ESCUDO_IMG.exists() else "🛡️",
 )
+
+
+def _font_face_data_uri(path: Path, family: str, weight: int = 400) -> str:
+    """Genera @font-face con el archivo local embebido en Base64 (Streamlit no sirve /fonts)."""
+    if not path.exists():
+        return ""
+    ext = path.suffix.lower()
+    fmt = {".woff2": "woff2", ".woff": "woff", ".ttf": "truetype", ".otf": "opentype"}.get(ext)
+    mime = {
+        ".woff2": "font/woff2",
+        ".woff": "font/woff",
+        ".ttf": "font/ttf",
+        ".otf": "font/otf",
+    }.get(ext)
+    if not fmt or not mime:
+        return ""
+    b64 = base64.b64encode(path.read_bytes()).decode()
+    return (
+        f"@font-face{{font-family:'{family}';"
+        f"src:url('data:{mime};base64,{b64}') format('{fmt}');"
+        f"font-weight:{weight};font-style:normal;font-display:swap;}}"
+    )
+
+
+def aplicar_fuentes():
+    """
+    Tipografía de la app:
+    - Inter  → texto / UI (Google Fonts, libre)
+    - Söhne  → títulos (archivos locales en fonts/, licencia comercial de Klim)
+    Si no hay archivos de Söhne, los títulos usan Inter como respaldo.
+    """
+    # Nombres habituales de archivos WOFF2 de Söhne (Klim). Podés ajustar la lista.
+    sohne_archivos = [
+        (400, ["Sohne-Buch.woff2", "soehne-buch.woff2", "TestSöhne-Buch.woff2"]),
+        (500, ["Sohne-Kraftig.woff2", "soehne-kraftig.woff2", "TestSöhne-Kräftig.woff2"]),
+        (600, ["Sohne-Halbfett.woff2", "soehne-halbfett.woff2", "TestSöhne-Halbfett.woff2"]),
+        (700, ["Sohne-Dreiviertelfett.woff2", "soehne-dreiviertelfett.woff2", "TestSöhne-Dreiviertelfett.woff2"]),
+    ]
+    sohne_css = ""
+    for weight, candidatos in sohne_archivos:
+        for nombre in candidatos:
+            face = _font_face_data_uri(FONTS_DIR / nombre, "Söhne", weight)
+            if face:
+                sohne_css += face
+                break
+
+    st.markdown(
+        f"""
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        {sohne_css}
+
+        /* Cuerpo / UI: Inter */
+        html, body, [class*="css"],
+        .stApp, .stMarkdown, .stTextInput, .stTextArea,
+        button, input, textarea, label, p, li, span {{
+            font-family: "Inter", system-ui, -apple-system, sans-serif !important;
+        }}
+
+        /* Títulos: Söhne (si está instalada); si no, Inter */
+        h1, h2, h3, h4, h5, h6,
+        .stTitle, [data-testid="stHeading"] {{
+            font-family: "Söhne", "Inter", system-ui, sans-serif !important;
+            letter-spacing: -0.02em;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+aplicar_fuentes()
 
 # Título con logo: columna imagen + columna texto (en lugar del emoji 🛡️)
 titulo_cols = st.columns([0.12, 0.88], vertical_alignment="center")
