@@ -5,9 +5,8 @@ from pathlib import Path
 
 # Rutas de recursos (respecto a este archivo app.py)
 BASE_DIR = Path(__file__).parent
-ESCUDO_IMG = BASE_DIR / "images" / "escudo.png"
+ESCUDO_IMG = BASE_DIR / "images" / "escudo.svg"
 PERFIL_IMG = BASE_DIR / "images" / "profile" / "developer3.jpg"
-FONTS_DIR = BASE_DIR / "fonts"
 
 # 1. Configuración de la pestaña del navegador
 # page_icon = favicon (ícono de favoritos / pestaña). Acepta emoji o ruta a imagen.
@@ -17,70 +16,31 @@ st.set_page_config(
 )
 
 
-def _font_face_data_uri(path: Path, family: str, weight: int = 400) -> str:
-    """Genera @font-face con el archivo local embebido en Base64 (Streamlit no sirve /fonts)."""
-    if not path.exists():
-        return ""
-    ext = path.suffix.lower()
-    fmt = {".woff2": "woff2", ".woff": "woff", ".ttf": "truetype", ".otf": "opentype"}.get(ext)
-    mime = {
-        ".woff2": "font/woff2",
-        ".woff": "font/woff",
-        ".ttf": "font/ttf",
-        ".otf": "font/otf",
-    }.get(ext)
-    if not fmt or not mime:
-        return ""
-    b64 = base64.b64encode(path.read_bytes()).decode()
-    return (
-        f"@font-face{{font-family:'{family}';"
-        f"src:url('data:{mime};base64,{b64}') format('{fmt}');"
-        f"font-weight:{weight};font-style:normal;font-display:swap;}}"
-    )
-
-
 def aplicar_fuentes():
     """
-    Tipografía de la app:
-    - Inter  → texto / UI (Google Fonts, libre)
-    - Söhne  → títulos (archivos locales en fonts/, licencia comercial de Klim)
-    Si no hay archivos de Söhne, los títulos usan Inter como respaldo.
+    Tipografía de la app (ambas desde Google Fonts, libres):
+    - Inter  → texto / UI
+    - Outfit → títulos (peso 300, look moderno y fino)
     """
-    # Nombres habituales de archivos WOFF2 de Söhne (Klim). Podés ajustar la lista.
-    sohne_archivos = [
-        (400, ["Sohne-Buch.woff2", "soehne-buch.woff2", "TestSöhne-Buch.woff2"]),
-        (500, ["Sohne-Kraftig.woff2", "soehne-kraftig.woff2", "TestSöhne-Kräftig.woff2"]),
-        (600, ["Sohne-Halbfett.woff2", "soehne-halbfett.woff2", "TestSöhne-Halbfett.woff2"]),
-        (700, ["Sohne-Dreiviertelfett.woff2", "soehne-dreiviertelfett.woff2", "TestSöhne-Dreiviertelfett.woff2"]),
-    ]
-    sohne_css = ""
-    for weight, candidatos in sohne_archivos:
-        for nombre in candidatos:
-            face = _font_face_data_uri(FONTS_DIR / nombre, "Söhne", weight)
-            if face:
-                sohne_css += face
-                break
-
     st.markdown(
-        f"""
+        """
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-        {sohne_css}
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap');
 
         /* Cuerpo / UI: Inter */
         html, body, [class*="css"],
         .stApp, .stMarkdown, .stTextInput, .stTextArea,
-        button, input, textarea, label, p, li, span {{
+        button, input, textarea, label, p, li, span {
             font-family: "Inter", system-ui, -apple-system, sans-serif !important;
-        }}
+        }
 
-        /* Títulos: Söhne (si está instalada); si no, Inter */
+        /* Títulos: Outfit Light (moderno y fino) */
         h1, h2, h3, h4, h5, h6,
-        .stTitle, [data-testid="stHeading"] {{
-            font-family: "Söhne", "Inter", system-ui, sans-serif !important;
+        .stTitle, [data-testid="stHeading"] {
+            font-family: "Outfit", "Inter", system-ui, sans-serif !important;
+            font-weight: 300 !important;
             letter-spacing: -0.02em;
-        }}
+        }
         </style>
         """,
         unsafe_allow_html=True,
