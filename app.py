@@ -3,13 +3,30 @@ import joblib
 import base64
 from pathlib import Path
 
+# Rutas de imágenes (respecto a este archivo app.py)
+BASE_DIR = Path(__file__).parent
+ESCUDO_IMG = BASE_DIR / "images" / "escudo.png"
+PERFIL_IMG = BASE_DIR / "images" / "profile" / "developer3.jpg"
+
 # 1. Configuración de la interfaz visual de la pestaña
-st.set_page_config(page_title="Filtro Anti-Spam IA", page_icon="🛡️")
-st.title("🛡️ Filtro Anti-Spam Inteligente")
+# page_icon acepta un emoji O la ruta a un archivo de imagen
+st.set_page_config(
+    page_title="Filtro Anti-Spam IA",
+    page_icon=str(ESCUDO_IMG) if ESCUDO_IMG.exists() else "🛡️",
+)
+
+# Título con logo: columna imagen + columna texto (en lugar del emoji 🛡️)
+titulo_cols = st.columns([0.12, 0.88], vertical_alignment="center")
+with titulo_cols[0]:
+    if ESCUDO_IMG.exists():
+        st.image(str(ESCUDO_IMG), width=64)
+    else:
+        st.write("🛡️")
+with titulo_cols[1]:
+    st.title("Filtro Anti-Spam Inteligente")
+
 st.write("Copia y pega el contenido de cualquier correo para analizarlo con Inteligencia Artificial (NLP).")
 st.write("Algoritmo Random Forest: Bosque Aleatorio (muchos árboles de decisión juntos)")
-
-PERFIL_IMG = Path(__file__).parent / "images" / "profile" / "developer3.jpg"
 LINKEDIN_URL = "https://www.linkedin.com/in/adgalvan/"
 GITHUB_URL = "https://github.com/AAGG22"
 BSKY_URL = "https://bsky.app/profile/adgalvan.bsky.social"
